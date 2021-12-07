@@ -36,19 +36,19 @@ See `demo.py`, it contains procedures:
 #### Optional:
 
 * note:
-  * `Note`
-  * `Program` (0~127)
-  * `Pitch` (0~127)
-  * `Velocity` (0~127)
-  * `Duration` (0~`split`*`bar_scale-1`)
+    * `Note`
+    * `Program` (0~127)
+    * `Pitch` (0~127)
+    * `Velocity` (0~127)
+    * `Duration` (0~`split`*`bar_scale-1`)
 * drum:
-  * `Drum`
-  * `Program` (0~127)
-  * `Pitch` (0~127)
-  * `Velocity` (0~127)
-  * `Duration` (0~`split`*`bar_scale-1`)
+    * `Drum`
+    * `Program` (0~127)
+    * `Pitch` (0~127)
+    * `Velocity` (0~127)
+    * `Duration` (0~`split`*`bar_scale-1`)
 * chord:
-  * `Chord` (`chroma_name`:`chord_name`)
+    * `Chord` (`chroma_name`:`chord_name`)
 * tempo:
-  * `Tempo_Class` (`T0`~`Ti`)
-  * `Tempo_Value` (0~59)
+    * `Tempo_Class` (`T0`~`Ti`)
+    * `Tempo_Value` (0~59)
