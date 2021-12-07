@@ -44,6 +44,9 @@ class MidiEncoder(Common):
         self.velocity_variation = None
         self.tempo_variation = None
 
+        # initialization
+        self.initialize_midi(self.file_path)
+
     def initialize_variation(self):
         if self.pitch_variation_range is None:
             self.pitch_variation = 0
@@ -92,7 +95,7 @@ class MidiEncoder(Common):
     def tempo_transform(self, tempo):
         return int(tempo * self.tempo_variation)
 
-    def read_midi(self, path):
+    def initialize_midi(self, path):
         # read midi now
         midi_obj = miditoolkit.midi.parser.MidiFile(path)
         self.ticks_per_beat = midi_obj.ticks_per_beat
@@ -356,10 +359,8 @@ class MidiEncoder(Common):
         return integers
 
     def encode(self):
-        # initialize variation
+        # get new initialize variation
         self.initialize_variation()
-        # initialize midi
-        self.read_midi(self.file_path)
         # convert to items
         note_items, drum_items, tempo_items = self.read_items()
         # quantize notes / drum items
