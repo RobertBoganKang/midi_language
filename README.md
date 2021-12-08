@@ -4,7 +4,7 @@
 
 ### Reference
 
-Paper: ***Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions***: [code](https://github.com/YatingMusic/remi)
+Paper: ***Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions*** ([code](https://github.com/YatingMusic/remi))
 
 This is a modified version with an extension of **multi-instrumental** support.
 
