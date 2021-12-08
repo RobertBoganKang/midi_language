@@ -10,7 +10,7 @@ This is a modified version with an extension of **multi-instrumental** support.
 
 ### Function
 
-Convert Midi into `event` sequence, and represented by mapped `integer array`.
+Convert Midi into `event` sequence, and represented by mapped `integer array` of tokens (used in NLP).
 
 This could send to `NLP` models for AI auto music composition. 
 
