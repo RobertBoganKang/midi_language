@@ -1,6 +1,6 @@
 import argparse
 
-from midi_language import *
+from multi_track import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='encode & decode midi test with MIDI Language')
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     # encode midi to integer array
     if args.train:
         me = MidiEncoder(args.input, w2i,
-                         pitch_variation_range=(-12, 12),
+                         pitch_variation_range=(-6, 6),
                          velocity_scale_variation_range=(0.8, 1),
                          velocity_noise_scale_variation_range=(0.95, 1.05),
                          tempo_scale_variation_range=(0.7, 1.4))
