@@ -47,18 +47,18 @@ class MidiEncoder(Common):
         # initialization
         self.initialize_midi(self.file_path)
 
-    def initialize_variation(self):
-        if self.pitch_variation_range is None:
+    def initialize_variation(self, variation):
+        if not variation and self.pitch_variation_range is None:
             self.pitch_variation = 0
         else:
             self.pitch_variation = random.randint(self.pitch_variation_range[0],
                                                   self.pitch_variation_range[1])
-        if self.velocity_scale_variation_range is None:
+        if not variation and self.velocity_scale_variation_range is None:
             self.velocity_variation = 1
         else:
             self.velocity_variation = random.uniform(self.velocity_scale_variation_range[0],
                                                      self.velocity_scale_variation_range[1])
-        if self.tempo_scale_variation_range is None:
+        if not variation and self.tempo_scale_variation_range is None:
             self.tempo_variation = 1
         else:
             self.tempo_variation = random.uniform(self.tempo_scale_variation_range[0],
@@ -358,9 +358,9 @@ class MidiEncoder(Common):
                 print(f'WARNING: `{word}` not in w2i!')
         return integers
 
-    def encode(self):
+    def encode(self, variation=True):
         # get new initialize variation
-        self.initialize_variation()
+        self.initialize_variation(variation)
         # convert to items
         note_items, drum_items, tempo_items = self.read_items()
         # quantize notes / drum items
