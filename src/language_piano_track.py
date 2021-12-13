@@ -5,7 +5,7 @@ from piano_track import *
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='encode & decode midi test with MIDI Language')
     parser.add_argument('--input', '-i', type=str, help='input file of audio file to encode/decode',
-                        default='demo/piano.mid')
+                        default='demo/piano_track.mid')
     parser.add_argument('--output', '-o', type=str, help='output file of audio file to encode',
                         default='demo/out.mid')
     parser.add_argument('--train', '-t', action='store_true', help='training mode with variations (data augmentation)')
