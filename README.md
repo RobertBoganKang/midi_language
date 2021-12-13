@@ -2,29 +2,31 @@
 
 ## Introduction
 
-### Reference
-
-***Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions*** ([code](https://github.com/YatingMusic/remi)).
-
-This is a modified version with an extension of **multi-instrumental** support.
-
-### Function
-
 Convert Midi into `event` sequence, and represented by mapped `integer array` of tokens (used in NLP).
 
 This could send to `NLP` models for AI auto music composition. 
 
-Due to this project considers more about music structures as well as its chord and melody on higher level, including `note`, `drum`, `tempo`, musical instrument (`program` in midi) and its expressions  (`tempo` and `velocity`), rather than digging into too much details like sound source & direction, instrumental performing techniques (such as, bend sound, piano sustain pedal, violin overtones), the language of `MIDI` is design this way (see chapter `Details` below).
+#### multi-instrumental
+
+Reference: ***Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions*** ([code](https://github.com/YatingMusic/remi)).
+
+Due to **multi-instrumental** considers more about music structures as well as its chord and melody on higher level, including `note`, `drum`, `tempo`, musical instrument (`program` in midi) and its expressions  (`tempo` and `velocity`), rather than digging into too much details like sound source & direction, instrumental performing techniques (such as, bend sound, piano sustain pedal, violin overtones), the language of `MIDI` is design this way (see chapter `Details` below).
+
+#### piano
+
+Reference: **Google Magenta piano-transformer**.
+
+Due to humanized `piano` performance ignores the properties of different instrument `program`, and `tempo` changes (keep as ticks precision), but add more piano techniques properties with `controls` (range from `64` to `69`) to keep paddle actions.
 
 ## Usage
 
-See `language.py`, it contains procedures:
+See `language_<package>.py`, it contains procedures:
 
 * load `w2i` (word to integer) and `i2w` (integer to word), for not calculating it every time;
 * encode `midi` to `iteger array`, each object handle one `mid` file;
 * decode `integer array` to `midi`, each object handle many results and export to `mid` files;
 
-The code `language.py` has arguments:
+The code `language_<package>.py` has arguments:
 
 *  `input`: input file of audio file to encode/decode;
 * `output`: output file of audio file to encode;
@@ -43,4 +45,4 @@ The code `language.py` has arguments:
 
 ### Event Structure
 
-To see the design of language, please check the comment  at `<package_name>/common.py` in `Event` class.
+To see the design of language, please check the comment  at `./<package_name>/common.py` in `Event` class.
