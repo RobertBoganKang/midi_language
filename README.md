@@ -39,7 +39,7 @@ The code `language_<package>.py` has arguments:
 * `velocity_noise_scale_variation_range`: a random note/drum velocity scale for each element within midi;
 * `tempo_scale_variation_range`: a random tempo change for whole midi;
 
-`MidiDecoder` needs `numerator` and `denominator` time signatures for reconstructing midi files.
+`MidiDecoder` needs `numerator` and `denominator` time signatures for reconstructing midi files (in `multi_track`).
 
 ## Details
 
