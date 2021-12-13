@@ -39,7 +39,7 @@ class EventDict(Common):
             self.update('Pitch' + self.separator + str(pitch))
 
     def build_duration(self):
-        for duration in range(self.quantized_max_frame):
+        for duration in range(1, self.quantized_max_frame + 1):
             self.update('Duration' + self.separator + str(duration))
 
     def build_all(self):
