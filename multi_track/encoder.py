@@ -48,21 +48,21 @@ class MidiEncoder(Common):
         self.initialize_midi(self.file_path)
 
     def initialize_variation(self, variation):
-        if not variation and self.pitch_variation_range is None:
-            self.pitch_variation = 0
-        else:
+        if variation and self.pitch_variation_range is not None:
             self.pitch_variation = random.randint(self.pitch_variation_range[0],
                                                   self.pitch_variation_range[1])
-        if not variation and self.velocity_scale_variation_range is None:
-            self.velocity_variation = 1
         else:
+            self.pitch_variation = 0
+        if variation and self.velocity_scale_variation_range is not None:
             self.velocity_variation = random.uniform(self.velocity_scale_variation_range[0],
                                                      self.velocity_scale_variation_range[1])
-        if not variation and self.tempo_scale_variation_range is None:
-            self.tempo_variation = 1
         else:
+            self.velocity_variation = 1
+        if variation and self.tempo_scale_variation_range is not None:
             self.tempo_variation = random.uniform(self.tempo_scale_variation_range[0],
                                                   self.tempo_scale_variation_range[1])
+        else:
+            self.tempo_variation = 1
 
     @staticmethod
     def velocity_transform(velocity, scale):

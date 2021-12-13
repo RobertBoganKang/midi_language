@@ -5,7 +5,7 @@ from multi_track import *
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='encode & decode midi test with MIDI Language')
     parser.add_argument('--input', '-i', type=str, help='input file of audio file to encode/decode',
-                        default='demo/in.mid')
+                        default='demo/multi_track.mid')
     parser.add_argument('--output', '-o', type=str, help='output file of audio file to encode',
                         default='demo/out.mid')
     parser.add_argument('--train', '-t', action='store_true', help='training mode with variations (data augmentation)')
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     if args.train:
         me = MidiEncoder(args.input, w2i,
                          pitch_variation_range=(-6, 6),
-                         velocity_scale_variation_range=(0.8, 1),
+                         velocity_scale_variation_range=(0.9, 1),
                          velocity_noise_scale_variation_range=(0.95, 1.05),
                          tempo_scale_variation_range=(0.7, 1.4))
     else:

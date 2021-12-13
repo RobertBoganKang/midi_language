@@ -214,7 +214,6 @@ class MidiDecoder(Common):
         # write instrument (drums)
         if self.decode_drum:
             for program, drums in drums_dict.items():
-                # program will be random (instrument sound)
                 inst = miditoolkit.midi.containers.Instrument(program, is_drum=True,
                                                               name='drum_' + str(program))
                 inst.notes = drums

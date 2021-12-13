@@ -4,7 +4,7 @@
 
 ### Reference
 
-Paper: ***Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions*** ([code](https://github.com/YatingMusic/remi))
+***Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions*** ([code](https://github.com/YatingMusic/remi)).
 
 This is a modified version with an extension of **multi-instrumental** support.
 
@@ -43,27 +43,4 @@ The code `language.py` has arguments:
 
 ### Event Structure
 
-#### Required:
-
-* Bar
-* Position (0~`split-1`)
-
-#### Optional:
-
-* note:
-    * `Note`
-    * `Program` (0~127)
-    * `Pitch` (0~127)
-    * `Velocity` (0~127)
-    * `Duration` (0~`split`*`bar_scale-1`)
-* drum:
-    * `Drum`
-    * `Program` (0~127)
-    * `Pitch` (0~127)
-    * `Velocity` (0~127)
-    * `Duration` (0~`split`*`bar_scale-1`)
-* chord:
-    * `Chord` (`chroma_name`:`chord_name`)
-* tempo:
-    * `Tempo_Class` (`T0`~`Ti`)
-    * `Tempo_Value` (0~59)
+To see the design of language, please check the comment  at `<package_name>/common.py` in `Event` class.
