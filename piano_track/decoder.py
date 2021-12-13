@@ -135,7 +135,7 @@ class MidiDecoder(Common):
         midi.ticks_per_beat = self.default_ticks_per_beat
 
         # program language is not encoded
-        inst = miditoolkit.midi.containers.Instrument(0, is_drum=False, name='piano')
+        inst = miditoolkit.midi.containers.Instrument(0, is_drum=False, name='piano_track')
         # write instrument (notes)
         if self.decode_note:
             inst.notes = notes

@@ -26,7 +26,7 @@ class EventDict(Common):
         self.global_counter += 1
 
     def build_control(self):
-        """ piano control from `64` to `69` """
+        """ piano_track control from `64` to `69` """
         for control in range(64, 70):
             self.update('Control' + self.separator + str(control))
 

@@ -42,7 +42,7 @@ class MidiEncoder(Common):
         # read midi now
         midi_obj = miditoolkit.midi.parser.MidiFile(path)
         self.ticks_per_beat = midi_obj.ticks_per_beat
-        # assume all channel notes and controls are piano
+        # assume all channel notes and controls are piano_track
         for instrument in midi_obj.instruments:
             self.notes.extend(instrument.notes)
             for control in instrument.control_changes:
