@@ -20,7 +20,7 @@ if __name__ == '__main__':
         me = MidiEncoder(args.input, w2i,
                          pitch_variation_range=(-6, 6),
                          velocity_scale_variation_range=(0.96, 1),
-                         velocity_noise_scale_variation_range=(0.96, 1.02),
+                         velocity_noise_scale_variation_range=(0.98, 1.02),
                          tempo_scale_variation_range=(0.9, 1.1))
     else:
         me = MidiEncoder(args.input, w2i)
