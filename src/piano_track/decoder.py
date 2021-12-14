@@ -111,11 +111,19 @@ class MidiDecoder(Common):
             pitch, velocity, time, status = note
             if status:
                 # note-on
-                self.notes_status[pitch] = [velocity, time]
+                if self.notes_status[pitch][0] == 0:
+                    self.notes_status[pitch] = [velocity, time]
+                else:
+                    # bad multiple note-on will translate notes
+                    on_velocity, on_time = self.notes_status[pitch]
+                    notes_list.append(miditoolkit.Note(on_velocity, pitch, on_time, time))
+                    self.notes_status[pitch] = [velocity, time]
             else:
                 # note-off
                 on_velocity, on_time = self.notes_status[pitch]
                 notes_list.append(miditoolkit.Note(on_velocity, pitch, on_time, time))
+                # reset
+                self.notes_status[pitch] = [0, 0]
         return notes_list
 
     @staticmethod
