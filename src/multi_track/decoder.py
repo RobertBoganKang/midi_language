@@ -36,12 +36,14 @@ class MidiDecoder(Common):
         temp_drums = []
         temp_chords = []
         temp_tempos = []
-        for i in range(len(events)):
+        i = 0
+        while i < len(events):
             if events[i].name == 'Bar' and i > 0:
                 temp_notes.append('Bar')
                 temp_drums.append('Bar')
                 temp_chords.append('Bar')
                 temp_tempos.append('Bar')
+                i += 1
             elif i < len(events) - 5 and events[i].name == 'Position' and \
                     events[i + 1].name == 'Note' and \
                     events[i + 2].name == 'Program' and \
@@ -60,6 +62,7 @@ class MidiDecoder(Common):
                 duration = events[i + 5].value * self.default_quantized_ticks
                 # adding
                 temp_notes.append([position, program, pitch, velocity, duration])
+                i += 5
             elif i < len(events) - 5 and events[i].name == 'Position' and \
                     events[i + 1].name == 'Drum' and \
                     events[i + 2].name == 'Program' and \
@@ -78,9 +81,11 @@ class MidiDecoder(Common):
                 duration = events[i + 5].value * self.default_quantized_ticks
                 # adding
                 temp_drums.append([position, program, pitch, velocity, duration])
+                i += 5
             elif i < len(events) - 1 and events[i].name == 'Position' and events[i + 1].name == 'Chord':
                 position = int(events[i].value)
                 temp_chords.append([position, events[i + 1].value])
+                i += 2
             elif i < len(events) - 2 and events[i].name == 'Position' and \
                     events[i + 1].name == 'Tempo_Class' and \
                     events[i + 2].name == 'Tempo_Value':
@@ -91,6 +96,10 @@ class MidiDecoder(Common):
                         tempo = self.default_tempo_intervals[j].start + int(events[i + 2].value)
                 if tempo is not None:
                     temp_tempos.append([position, tempo])
+                i += 3
+            else:
+                # bad case
+                i += 1
         return temp_notes, temp_drums, temp_chords, temp_tempos
 
     def build_notes_drums(self, temp_xs):

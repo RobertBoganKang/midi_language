@@ -156,8 +156,8 @@ class MidiEncoder(Common):
     def duration_transform(self, duration):
         return min(self.quantized_max_duration_frame, max(1, duration))
 
-    def time_transform(self, duration):
-        return min(self.quantized_max_time_frame, duration)
+    def time_transform(self, delta_time):
+        return min(self.quantized_max_time_frame, delta_time)
 
     def item_to_event(self, items):
         events = []

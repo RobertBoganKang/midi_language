@@ -33,7 +33,7 @@ class MidiDecoder(Common):
         accumulate_time = 0
         i = 0
         while i < len(events):
-            if i < len(events) - 3 and events[i].name == 'Pitch' \
+            if i < len(events) - 2 and events[i].name == 'Pitch' \
                     and events[i + 1].name == 'Velocity' \
                     and events[i + 2].name == 'Duration':
                 # pitch
@@ -48,11 +48,11 @@ class MidiDecoder(Common):
                 # adding
                 temp_notes.append([pitch, velocity, duration, start_time, end_time])
                 i += 3
-            elif i < len(events) - 2 and events[i].name == 'Control' and events[i + 1].name == 'Duration':
+            elif i < len(events) - 1 and events[i].name == 'Control' and events[i + 1].name == 'Duration':
                 # control
                 control = int(events[i].value)
                 # duration
-                duration = events[i + 2].value * self.quantized_tick_to_duration_frame_scale
+                duration = events[i + 1].value * self.quantized_tick_to_duration_frame_scale
                 # start/end time
                 start_time = int(round(accumulate_time))
                 end_time = int(round(start_time + duration))
