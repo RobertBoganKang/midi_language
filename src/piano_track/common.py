@@ -4,7 +4,7 @@ import os
 class Common(object):
     def __init__(self):
         self.quantized_time = 0.02
-        self.quantized_duration = 0.1
+        self.quantized_duration = 0.05
         self.max_time = 10
         self.max_duration = 10
         self.default_beat_per_minute = 120
