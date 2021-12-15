@@ -40,10 +40,10 @@ class Event(object):
     * note:
         * `Pitch` (0~127)
         * `Velocity` (0~127)
-        * `Duration` (0~`max_duration`/`quantized_time`)
+        * `Duration` (0~`max_duration`/`quantized_duration`)
     * paddle:
         * `Control` (64~69)
-        * `Duration` (0~`max_duration`/`quantized_time`)
+        * `Duration` (0~`max_duration`/`quantized_duration`)
     * delta time:
         * `Time` (0~`max_time`/`quantized_time`)
     """
