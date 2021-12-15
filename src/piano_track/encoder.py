@@ -147,7 +147,9 @@ class MidiEncoder(Common):
         for item in items:
             quantized_start = int(round(item.start / self.quantized_tick_to_time_frame_scale))
             quantized_end = int(round(item.end / self.quantized_tick_to_time_frame_scale))
-            quantized_duration = int(round((item.end - item.start) / self.quantized_tick_to_duration_frame_scale))
+            quantized_duration = int(round((quantized_end - quantized_start) *
+                                           self.quantized_tick_to_time_frame_scale /
+                                           self.quantized_tick_to_duration_frame_scale))
             item.start = quantized_start
             item.end = quantized_end
             item.duration = quantized_duration
