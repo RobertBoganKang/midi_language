@@ -28,7 +28,8 @@ class EventDict(Common):
     def build_control(self):
         """ piano_track control from `64` to `69` """
         for control in range(64, 70):
-            self.update('Control' + self.separator + str(control))
+            self.update('PaddleOn' + self.separator + str(control))
+            self.update('PaddleOff' + self.separator + str(control))
 
     def build_velocity(self):
         for velocity in range(128):
@@ -36,14 +37,11 @@ class EventDict(Common):
 
     def build_pitch(self):
         for pitch in range(128):
-            self.update('Pitch' + self.separator + str(pitch))
-
-    def build_duration(self):
-        for duration in range(1, self.quantized_max_duration_frame + 1):
-            self.update('Duration' + self.separator + str(duration))
+            self.update('NoteOn' + self.separator + str(pitch))
+            self.update('NoteOff' + self.separator + str(pitch))
 
     def build_delta_time(self):
-        for duration in range(1, self.quantized_max_time_frame + 1):
+        for duration in range(1, self.quantized_max_frame + 1):
             self.update('Time' + self.separator + str(duration))
 
     def build_all(self):
@@ -52,7 +50,6 @@ class EventDict(Common):
         if self.with_note:
             self.build_pitch()
             self.build_velocity()
-            self.build_duration()
         self.build_delta_time()
 
     def export(self):
