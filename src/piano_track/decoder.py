@@ -21,7 +21,10 @@ class MidiDecoder(Common):
         self.decode_control = decode_control
 
         # calculate
-        self.quantized_tick_to_frame_scale = (ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_time)
+        self.quantized_tick_to_time_frame_scale = (
+                    ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_time)
+        self.quantized_tick_to_duration_frame_scale = (
+                    ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_duration)
 
     def extract_events(self, events):
         # get downbeat and note (no time)
@@ -38,7 +41,7 @@ class MidiDecoder(Common):
                 # velocity
                 velocity = int(events[i + 1].value)
                 # duration
-                duration = events[i + 2].value * self.quantized_tick_to_frame_scale
+                duration = events[i + 2].value * self.quantized_tick_to_duration_frame_scale
                 # start/end time
                 start_time = int(round(accumulate_time))
                 end_time = int(round(start_time + duration))
@@ -49,7 +52,7 @@ class MidiDecoder(Common):
                 # control
                 control = int(events[i].value)
                 # duration
-                duration = events[i + 2].value * self.quantized_tick_to_frame_scale
+                duration = events[i + 2].value * self.quantized_tick_to_duration_frame_scale
                 # start/end time
                 start_time = int(round(accumulate_time))
                 end_time = int(round(start_time + duration))
@@ -58,7 +61,7 @@ class MidiDecoder(Common):
                 i += 2
             elif events[i].name == 'Time':
                 # delta time
-                delta_time = events[i].value * self.quantized_tick_to_frame_scale
+                delta_time = events[i].value * self.quantized_tick_to_time_frame_scale
                 accumulate_time += delta_time
                 i += 1
             else:

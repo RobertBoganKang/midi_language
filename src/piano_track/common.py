@@ -4,7 +4,8 @@ import os
 class Common(object):
     def __init__(self):
         self.quantized_time = 0.02
-        self.max_time = 5
+        self.quantized_duration = 0.1
+        self.max_time = 10
         self.max_duration = 10
         self.default_beat_per_minute = 120
         self.separator = '~'
@@ -15,21 +16,22 @@ class Common(object):
         self.with_control = True
 
         # calculate
-        self.quantized_max_duration_frame = int(self.max_duration / self.quantized_time)
+        self.quantized_max_duration_frame = int(self.max_duration / self.quantized_duration)
         self.quantized_max_time_frame = int(self.max_time / self.quantized_time)
 
 
 class Item(object):
-    def __init__(self, name, start, end, velocity, pitch):
+    def __init__(self, name, start, end, duration, velocity, pitch):
         self.name = name
         self.start = start
         self.end = end
+        self.duration = duration
         self.velocity = velocity
         self.pitch = pitch
 
     def __repr__(self):
         return f'Item(name={self.name}, start={self.start}, end={self.end}, ' \
-               f'velocity={self.velocity}, pitch={self.pitch})'
+               f'duration={self.duration}, velocity={self.velocity}, pitch={self.pitch})'
 
 
 class Event(object):

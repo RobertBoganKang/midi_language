@@ -29,7 +29,8 @@ class MidiEncoder(Common):
         self.notes = []
         self.controls = []
         self.ticks_per_beat = None
-        self.quantized_tick_to_frame_scale = None
+        self.quantized_tick_to_time_frame_scale = None
+        self.quantized_tick_to_duration_frame_scale = None
         # variation
         self.pitch_variation = None
         self.velocity_variation = None
@@ -49,8 +50,10 @@ class MidiEncoder(Common):
                 if 64 <= control.number <= 69:
                     self.controls.append(control)
         # assume default `bpm` is 120
-        self.quantized_tick_to_frame_scale = (
+        self.quantized_tick_to_time_frame_scale = (
                 self.ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_time)
+        self.quantized_tick_to_duration_frame_scale = (
+                self.ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_duration)
 
     def initialize_variation(self, variation):
         if variation and self.pitch_variation_range is not None:
@@ -110,6 +113,7 @@ class MidiEncoder(Common):
                 name='Note',
                 start=self.tempo_transform(note.start),
                 end=self.tempo_transform(note.end),
+                duration=None,
                 velocity=note_velocity,
                 pitch=self.pitch_transform(note.pitch)))
         note_items.sort(key=lambda x: x.start)
@@ -130,6 +134,7 @@ class MidiEncoder(Common):
                         name='Control',
                         start=self.tempo_transform(start),
                         end=self.tempo_transform(control.time),
+                        duration=None,
                         velocity=None,
                         pitch=control.number))
                 status = False
@@ -140,14 +145,19 @@ class MidiEncoder(Common):
         """ convert to quantized `bigger` frames """
         # process
         for item in items:
-            quantized_start = int(round(item.start / self.quantized_tick_to_frame_scale))
-            quantized_end = int(round(item.end / self.quantized_tick_to_frame_scale))
+            quantized_start = int(round(item.start / self.quantized_tick_to_time_frame_scale))
+            quantized_end = int(round(item.end / self.quantized_tick_to_time_frame_scale))
+            quantized_duration = int(round((item.end - item.start) / self.quantized_tick_to_duration_frame_scale))
             item.start = quantized_start
             item.end = quantized_end
+            item.duration = quantized_duration
         return items
 
-    def time_or_duration_transform(self, duration):
+    def duration_transform(self, duration):
         return min(self.quantized_max_duration_frame, max(1, duration))
+
+    def time_transform(self, duration):
+        return min(self.quantized_max_time_frame, duration)
 
     def item_to_event(self, items):
         events = []
@@ -160,7 +170,7 @@ class MidiEncoder(Common):
                 events.append(Event(
                     name='Time',
                     time=start_time,
-                    value=self.time_or_duration_transform(start_time - temp_time),
+                    value=self.time_transform(start_time - temp_time),
                     text='delta_time'))
                 temp_time = start_time
             # notes
@@ -179,7 +189,7 @@ class MidiEncoder(Common):
                 events.append(Event(
                     name='Duration',
                     time=start_time,
-                    value=self.time_or_duration_transform(item.end - item.start),
+                    value=self.duration_transform(item.duration),
                     text='duration'))
             elif item.name == 'Control':
                 events.append(Event(
@@ -190,7 +200,7 @@ class MidiEncoder(Common):
                 events.append(Event(
                     name='Duration',
                     time=start_time,
-                    value=self.time_or_duration_transform(item.end - item.start),
+                    value=self.duration_transform(item.duration),
                     text='duration'))
         return events
 
