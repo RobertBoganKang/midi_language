@@ -12,11 +12,13 @@ Reference: ***Pop Music Transformer: Beat-based Modeling and Generation of Expre
 
 Due to **multi-instrumental** considers more about music structures as well as its `chord` and melody on higher level, including `note`, `drum`, `tempo`, musical instrument (`program` in midi) and its expressions  (`tempo` and `velocity`), rather than digging into too much details like sound source & direction, instrumental performing techniques (such as, bend sound, piano sustain pedal, violin overtones), the language of `MIDI` is design this way (see chapter `Details` below).
 
-#### piano (`piano_track`)
+#### piano (`piano_track_*)
 
-Reference: **Google Magenta Piano-Transformer**.
+Reference: **Google Magenta Music-Transformer**.
 
 Due to humanized `piano` performance ignores the properties of different instrument `program`, and `tempo` changes (keep as ticks precision), but add more piano techniques properties with `controls` (range from `64` to `69`) to keep paddle actions.
+
+Library `piano_track_b` is *Magenta* like version, whereas `piano_track_a` convert `note-off` and `paddle-off` properties into `duration` for better representation.
 
 ## Usage
 
