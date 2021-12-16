@@ -18,7 +18,7 @@ Reference: **Google Magenta Music-Transformer**.
 
 Due to humanized `piano` performance ignores the properties of different instrument `program`, and `tempo` changes (keep as ticks precision), but add more piano techniques properties with `controls` (range from `64` to `69`) to keep paddle actions.
 
-Library `piano_track_b` is *Magenta* like version, whereas `piano_track_a` convert `note-off` property into `duration` for better representation (`notes` cares about its starting time and duration, and `paddle` cares about where it will start or end).
+Library `piano_track_b` is *Magenta* like version, whereas `piano_track_a` convert `note-off` property into `duration` for better representation (**Notes** cares about its starting time and duration, and **Paddle** cares about where it will start or end).
 
 ## Usage
 
