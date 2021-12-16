@@ -210,7 +210,6 @@ class MidiDecoder(Common):
         midi.time_signature_changes.append(inst_time_sig)
         midi.ticks_per_beat = self.default_ticks_per_beat
 
-        # program language is not encoded
         # write instrument (notes)
         if self.decode_note:
             for program, notes in notes_dict.items():
