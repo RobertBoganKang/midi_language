@@ -32,11 +32,13 @@ See the demo file `language_<package>.py`, it contains procedures:
 
 ### Arguments
 
+#### `language_<package>.py`
+
 *  `input`: input file of audio file to encode/decode;
 * `output`: output file of audio file to encode;
 * `train`: if have, it will switch to training mode with variations (data augmentation);
 
-#### Argument for `MidiEncoder` and `MidiDecoder`
+#### `MidiEncoder` and `MidiDecoder`
 
 Data Augmentation in `MidiEncoder`:
 
