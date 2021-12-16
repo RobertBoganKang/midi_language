@@ -48,17 +48,22 @@ class MidiDecoder(Common):
                 # adding
                 temp_notes.append([pitch, velocity, duration, start_time, end_time])
                 i += 3
-            elif i < len(events) - 1 and events[i].name == 'Control' and events[i + 1].name == 'Duration':
+            elif i < len(events) and events[i].name == 'PaddleOn':
                 # control
                 control = int(events[i].value)
-                # duration
-                duration = events[i + 1].value * self.quantized_tick_to_duration_frame_scale
                 # start/end time
                 start_time = int(round(accumulate_time))
-                end_time = int(round(start_time + duration))
                 # adding
-                temp_controls.append([control, duration, start_time, end_time])
-                i += 2
+                temp_controls.append([control, start_time, True])
+                i += 1
+            elif i < len(events) and events[i].name == 'PaddleOff':
+                # control
+                control = int(events[i].value)
+                # start/end time
+                start_time = int(round(accumulate_time))
+                # adding
+                temp_controls.append([control, start_time, False])
+                i += 1
             elif events[i].name == 'Time':
                 # delta time
                 delta_time = events[i].value * self.quantized_tick_to_time_frame_scale
@@ -107,16 +112,12 @@ class MidiDecoder(Common):
     @staticmethod
     def build_controls(temp_controls):
         controls_list = []
-        control_starting_dict = {}
-        for k in range(64, 70):
-            control_starting_dict[k] = False
         for control in temp_controls:
-            control, duration, start_time, end_time = control
-            if not control_starting_dict[control]:
-                controls_list.append(miditoolkit.ControlChange(number=control, value=0, time=0))
-                control_starting_dict[control] = True
-            controls_list.append(miditoolkit.ControlChange(number=control, value=127, time=start_time))
-            controls_list.append(miditoolkit.ControlChange(number=control, value=0, time=end_time))
+            control, start_time, status = control
+            if status:
+                controls_list.append(miditoolkit.ControlChange(number=control, value=127, time=start_time))
+            else:
+                controls_list.append(miditoolkit.ControlChange(number=control, value=0, time=start_time))
         return controls_list
 
     def decode(self, integers, output_path):

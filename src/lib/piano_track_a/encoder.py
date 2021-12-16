@@ -131,9 +131,16 @@ class MidiEncoder(Common):
             else:
                 if status:
                     control_items.append(Item(
-                        name='Control',
+                        name='PaddleOn',
                         start=self.tempo_transform(start),
-                        end=self.tempo_transform(control.time),
+                        end=None,
+                        duration=None,
+                        velocity=None,
+                        pitch=control.number))
+                    control_items.append(Item(
+                        name='PaddleOff',
+                        start=self.tempo_transform(control.time),
+                        end=None,
                         duration=None,
                         velocity=None,
                         pitch=control.number))
@@ -141,18 +148,19 @@ class MidiEncoder(Common):
         control_items.sort(key=lambda x: x.start)
         return note_items, control_items
 
-    def quantize_items(self, items):
+    def quantize_items(self, items, quantize_duration=True):
         """ convert to quantized `bigger` frames """
         # process
         for item in items:
             quantized_start = int(round(item.start / self.quantized_tick_to_time_frame_scale))
-            quantized_end = int(round(item.end / self.quantized_tick_to_time_frame_scale))
-            quantized_duration = int(round((quantized_end - quantized_start) *
-                                           self.quantized_tick_to_time_frame_scale /
-                                           self.quantized_tick_to_duration_frame_scale))
             item.start = quantized_start
-            item.end = quantized_end
-            item.duration = quantized_duration
+            if quantize_duration:
+                quantized_end = int(round(item.end / self.quantized_tick_to_time_frame_scale))
+                quantized_duration = int(round((quantized_end - quantized_start) *
+                                               self.quantized_tick_to_time_frame_scale /
+                                               self.quantized_tick_to_duration_frame_scale))
+                item.end = quantized_end
+                item.duration = quantized_duration
         return items
 
     def duration_transform(self, duration):
@@ -193,17 +201,18 @@ class MidiEncoder(Common):
                     time=start_time,
                     value=self.duration_transform(item.duration),
                     text='duration'))
-            elif item.name == 'Control':
+            elif item.name == 'PaddleOn':
                 events.append(Event(
-                    name='Control',
+                    name='PaddleOn',
                     time=start_time,
                     value=item.pitch,
-                    text='control'))
+                    text='paddle-on'))
+            elif item.name == 'PaddleOff':
                 events.append(Event(
-                    name='Duration',
+                    name='PaddleOff',
                     time=start_time,
-                    value=self.duration_transform(item.duration),
-                    text='duration'))
+                    value=item.pitch,
+                    text='paddle-off'))
         return events
 
     def events_to_words(self, events):
@@ -228,7 +237,7 @@ class MidiEncoder(Common):
         self.initialize_variation(variation)
         note_items, control_items = self.read_items()
         note_items = self.quantize_items(note_items)
-        control_items = self.quantize_items(control_items)
+        control_items = self.quantize_items(control_items, quantize_duration=False)
         all_items = []
         if self.with_note:
             all_items.extend(note_items)

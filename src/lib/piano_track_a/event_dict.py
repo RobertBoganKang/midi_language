@@ -28,7 +28,8 @@ class EventDict(Common):
     def build_control(self):
         """ piano_track control from `64` to `69` """
         for control in range(64, 70):
-            self.update('Control' + self.separator + str(control))
+            self.update('PaddleOn' + self.separator + str(control))
+            self.update('PaddleOff' + self.separator + str(control))
 
     def build_velocity(self):
         for velocity in range(128):

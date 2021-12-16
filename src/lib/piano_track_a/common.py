@@ -6,7 +6,7 @@ class Common(object):
         self.quantized_time = 0.02
         self.quantized_duration = 0.05
         self.max_time = 10
-        self.max_duration = 40
+        self.max_duration = 15
         self.default_beat_per_minute = 120
         self.separator = '~'
         self.dic_path = os.path.join(os.path.dirname(__file__), 'dic.pkl')
@@ -42,8 +42,8 @@ class Event(object):
         * `Velocity` (0~127)
         * `Duration` (0~`max_duration`/`quantized_duration`)
     * paddle:
-        * `Control` (64~69)
-        * `Duration` (0~`max_duration`/`quantized_duration`)
+        * `PaddleOn` (64~69)
+        * `PaddleOff` (64~69)
     * delta time:
         * `Time` (0~`max_time`/`quantized_time`)
     """
