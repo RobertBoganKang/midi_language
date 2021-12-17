@@ -14,7 +14,7 @@ Due to **multi-instrumental** considers more about music structures as well as i
 
 Library `multi_track_a` extend `REMI` with `Drum` and multi-instrumental support with  `Program`, whereas `multi_track_b` combines the `Position` representations and removes redundant `Note`/`Drum` identifier such that shorten the token size.
 
-### piano (`piano_track_*)
+### piano (`piano_track)
 
 Reference: **Google Magenta Music-Transformer** and **OpenAI MuseNet**.
 
