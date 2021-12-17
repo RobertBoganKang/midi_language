@@ -12,13 +12,15 @@ Reference: ***Pop Music Transformer: Beat-based Modeling and Generation of Expre
 
 Due to **multi-instrumental** considers more about music structures as well as its `chord` and melody on higher level, including `note`, `drum`, `tempo`, musical instrument (`program` in midi) and its expressions  (`tempo` and `velocity`), rather than digging into too much details like sound source & direction, instrumental performing techniques (such as, bend sound, piano sustain pedal, violin overtones), the language of `MIDI` is design this way (see chapter `Details` below).
 
+Library `multi_track_a` extend `REMI` with `Drum` and multi-instrumental support with  `Program`, whereas `multi_track_b` combines the `Position` representations and removes redundant `Note`/`Drum` identifier such that shorten the token size.
+
 ### piano (`piano_track_*)
 
 Reference: **Google Magenta Music-Transformer** and **OpenAI MuseNet**.
 
-Due to humanized **piano** performance ignores the properties of different instrument `program`, and `tempo` changes (keep as ticks precision), but add more piano techniques properties with `controls` (range from `64` to `69`) to keep paddle actions.
+Due to **humanized piano** performance ignores the properties of different instrument `program`, and `tempo` changes (keep as ticks precision), but add more piano techniques properties with `controls` (range from `64` to `69`) to keep paddle actions.
 
-Library `piano_track_b` is *Magenta* like version, whereas `piano_track_a` convert `note-off` property into `duration` for better representation, because **Notes** cares about its starting time and duration, and **Paddle** cares about where it will start or end.
+Library `piano_track_a` is *Magenta* like version, whereas `piano_track_b` convert `note-off` property into `duration` for better representation, because **Notes** cares about its starting time and duration, and **Paddle** cares about where it will start or end.
 
 ## Usage
 

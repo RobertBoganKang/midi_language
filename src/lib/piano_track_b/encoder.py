@@ -29,7 +29,8 @@ class MidiEncoder(Common):
         self.notes = []
         self.controls = []
         self.ticks_per_beat = None
-        self.quantized_tick_to_frame_scale = None
+        self.quantized_tick_to_time_frame_scale = None
+        self.quantized_tick_to_duration_frame_scale = None
         # variation
         self.pitch_variation = None
         self.velocity_variation = None
@@ -49,8 +50,10 @@ class MidiEncoder(Common):
                 if 64 <= control.number <= 69:
                     self.controls.append(control)
         # assume default `bpm` is 120
-        self.quantized_tick_to_frame_scale = (
+        self.quantized_tick_to_time_frame_scale = (
                 self.ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_time)
+        self.quantized_tick_to_duration_frame_scale = (
+                self.ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_duration)
 
     def initialize_variation(self, variation):
         if variation and self.pitch_variation_range is not None:
@@ -106,82 +109,84 @@ class MidiEncoder(Common):
         for note in self.notes:
             note_velocity = self.velocity_transform(note.velocity, self.velocity_variation)
             note_velocity = self.velocity_noise_add(note_velocity)
-            start_time = self.tempo_transform(note.start)
-            end_time = self.tempo_transform(note.end)
-            # duration should larger than `1` frame
-            if end_time - start_time < self.quantized_tick_to_frame_scale:
-                end_time = start_time + self.quantized_tick_to_frame_scale
             note_items.append(Item(
-                name='NoteOn',
-                time=start_time,
+                name='Note',
+                start=self.tempo_transform(note.start),
+                end=self.tempo_transform(note.end),
+                duration=None,
                 velocity=note_velocity,
                 pitch=self.pitch_transform(note.pitch)))
-            note_items.append(Item(
-                name='NoteOff',
-                time=end_time,
-                velocity=note_velocity,
-                pitch=self.pitch_transform(note.pitch)))
+        note_items.sort(key=lambda x: x.start)
 
         # control
         control_items = []
-        status = [False] * 127
-        start = [0] * 127
-        value = [0] * 127
+        status = False
+        start = 0
         for control in self.controls:
-            number = control.number
-            value[number] = control.value
-            if value[number] > 0:
-                if not status[number]:
-                    start[number] = control.time
-                status[number] = True
+            value = control.value
+            if value > 0:
+                if not status:
+                    start = control.time
+                status = True
             else:
-                if status[number]:
-                    start_time = self.tempo_transform(start[number])
-                    end_time = self.tempo_transform(control.time)
-                    # paddle object should larger than `1` frame
-                    if end_time - start_time >= self.quantized_tick_to_frame_scale:
-                        control_items.append(Item(
-                            name='PaddleOn',
-                            time=start_time,
-                            velocity=None,
-                            pitch=number))
-                        control_items.append(Item(
-                            name='PaddleOff',
-                            time=end_time,
-                            velocity=None,
-                            pitch=number))
-                status[number] = False
+                if status:
+                    control_items.append(Item(
+                        name='PaddleOn',
+                        start=self.tempo_transform(start),
+                        end=None,
+                        duration=None,
+                        velocity=None,
+                        pitch=control.number))
+                    control_items.append(Item(
+                        name='PaddleOff',
+                        start=self.tempo_transform(control.time),
+                        end=None,
+                        duration=None,
+                        velocity=None,
+                        pitch=control.number))
+                status = False
+        control_items.sort(key=lambda x: x.start)
         return note_items, control_items
 
-    def quantize_items(self, items):
+    def quantize_items(self, items, quantize_duration=True):
         """ convert to quantized `bigger` frames """
         # process
         for item in items:
-            quantized_time = int(round(item.time / self.quantized_tick_to_frame_scale))
-            item.time = quantized_time
+            quantized_start = int(round(item.start / self.quantized_tick_to_time_frame_scale))
+            item.start = quantized_start
+            if quantize_duration:
+                quantized_end = int(round(item.end / self.quantized_tick_to_time_frame_scale))
+                quantized_duration = int(round((quantized_end - quantized_start) *
+                                               self.quantized_tick_to_time_frame_scale /
+                                               self.quantized_tick_to_duration_frame_scale))
+                item.end = quantized_end
+                item.duration = quantized_duration
         return items
 
-    def time_or_duration_transform(self, duration):
-        return min(self.quantized_max_frame, max(1, duration))
+    def duration_transform(self, duration):
+        return min(self.quantized_max_duration_frame, max(1, duration))
+
+    def time_transform(self, delta_time):
+        return min(self.quantized_max_time_frame, delta_time)
 
     def item_to_event(self, items):
         events = []
         temp_time = None
         for item in items:
-            start_time = item.time
+            start_time = item.start
             if temp_time is None:
                 temp_time = start_time
             elif start_time - temp_time != 0:
                 events.append(Event(
                     name='Time',
                     time=start_time,
-                    value=self.time_or_duration_transform(start_time - temp_time),
+                    value=self.time_transform(start_time - temp_time),
                     text='delta_time'))
                 temp_time = start_time
             # notes
-            if item.name == 'NoteOn':
+            if item.name == 'Note':
                 events.append(Event(
-                    name='NoteOn',
+                    name='Pitch',
                     time=start_time,
                     value=item.pitch,
                     text='pitch'))
@@ -190,24 +195,24 @@ class MidiEncoder(Common):
                     time=start_time,
                     value=item.velocity,
                     text='velocity'))
-            elif item.name == 'NoteOff':
+                # duration should larger than `1` frame
                 events.append(Event(
-                    name='NoteOff',
+                    name='Duration',
                     time=start_time,
-                    value=item.pitch,
-                    text='pitch'))
+                    value=self.duration_transform(item.duration),
+                    text='duration'))
             elif item.name == 'PaddleOn':
                 events.append(Event(
                     name='PaddleOn',
                     time=start_time,
                     value=item.pitch,
-                    text='control'))
+                    text='paddle-on'))
             elif item.name == 'PaddleOff':
                 events.append(Event(
                     name='PaddleOff',
                     time=start_time,
                     value=item.pitch,
-                    text='control'))
+                    text='paddle-off'))
         return events
 
     def events_to_words(self, events):
@@ -232,13 +237,13 @@ class MidiEncoder(Common):
         self.initialize_variation(variation)
         note_items, control_items = self.read_items()
         note_items = self.quantize_items(note_items)
-        control_items = self.quantize_items(control_items)
+        control_items = self.quantize_items(control_items, quantize_duration=False)
         all_items = []
         if self.with_note:
             all_items.extend(note_items)
         if self.with_control:
             all_items.extend(control_items)
-        all_items.sort(key=lambda x: x.time)
+        all_items.sort(key=lambda x: x.start)
         events = self.item_to_event(all_items)
         words = self.events_to_words(events)
         ints = self.words_to_integers(words)

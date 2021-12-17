@@ -1,7 +1,7 @@
 import argparse
 
-# from lib.piano_track_b import *
-from lib.piano_track_a import *
+# from lib.piano_track_a import *
+from lib.piano_track_b import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='encode & decode midi test with MIDI Language')

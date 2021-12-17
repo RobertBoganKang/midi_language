@@ -20,11 +20,11 @@ class MidiDecoder(Common):
         self.decode_note = decode_note
         self.decode_control = decode_control
 
-        # system parameters
-        self.notes_status = [[0, 0]] * 127
-
         # calculate
-        self.quantized_tick_to_frame_scale = (ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_time)
+        self.quantized_tick_to_time_frame_scale = (
+                    ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_time)
+        self.quantized_tick_to_duration_frame_scale = (
+                    ticks_per_beat * self.default_beat_per_minute / 60 * self.quantized_duration)
 
     def extract_events(self, events):
         # get downbeat and note (no time)
@@ -33,44 +33,40 @@ class MidiDecoder(Common):
         accumulate_time = 0
         i = 0
         while i < len(events):
-            if i < len(events) - 1 and events[i].name == 'NoteOn' \
-                    and events[i + 1].name == 'Velocity':
+            if i < len(events) - 2 and events[i].name == 'Pitch' \
+                    and events[i + 1].name == 'Velocity' \
+                    and events[i + 2].name == 'Duration':
                 # pitch
                 pitch = int(events[i].value)
                 # velocity
                 velocity = int(events[i + 1].value)
+                # duration
+                duration = events[i + 2].value * self.quantized_tick_to_duration_frame_scale
                 # start/end time
-                time = int(round(accumulate_time))
+                start_time = int(round(accumulate_time))
+                end_time = int(round(start_time + duration))
                 # adding
-                temp_notes.append([pitch, velocity, time, True])
-                i += 2
-            elif i < len(events) and events[i].name == 'NoteOff':
-                # pitch
-                pitch = int(events[i].value)
-                # start/end time
-                time = int(round(accumulate_time))
-                # adding
-                temp_notes.append([pitch, None, time, False])
-                i += 1
+                temp_notes.append([pitch, velocity, duration, start_time, end_time])
+                i += 3
             elif i < len(events) and events[i].name == 'PaddleOn':
                 # control
                 control = int(events[i].value)
                 # start/end time
-                time = int(round(accumulate_time))
+                start_time = int(round(accumulate_time))
                 # adding
-                temp_controls.append([control, time, True])
+                temp_controls.append([control, start_time, True])
                 i += 1
             elif i < len(events) and events[i].name == 'PaddleOff':
                 # control
                 control = int(events[i].value)
                 # start/end time
-                time = int(round(accumulate_time))
+                start_time = int(round(accumulate_time))
                 # adding
-                temp_controls.append([control, time, False])
+                temp_controls.append([control, start_time, False])
                 i += 1
             elif events[i].name == 'Time':
                 # delta time
-                delta_time = events[i].value * self.quantized_tick_to_frame_scale
+                delta_time = events[i].value * self.quantized_tick_to_time_frame_scale
                 accumulate_time += delta_time
                 i += 1
             else:
@@ -105,38 +101,23 @@ class MidiDecoder(Common):
                 print(f'WARNING: `{integer}` not in i2w!')
         return words
 
-    def build_notes(self, temp_notes):
+    @staticmethod
+    def build_notes(temp_notes):
         notes_list = []
         for note in temp_notes:
-            pitch, velocity, time, status = note
-            if status:
-                # note-on
-                if self.notes_status[pitch][0] == 0:
-                    self.notes_status[pitch] = [velocity, time]
-                else:
-                    # bad multiple note-on will translate notes
-                    on_velocity, on_time = self.notes_status[pitch]
-                    notes_list.append(miditoolkit.Note(on_velocity, pitch, on_time, time))
-                    self.notes_status[pitch] = [velocity, time]
-            else:
-                # note-off
-                on_velocity, on_time = self.notes_status[pitch]
-                notes_list.append(miditoolkit.Note(on_velocity, pitch, on_time, time))
-                # reset
-                self.notes_status[pitch] = [0, 0]
+            pitch, velocity, duration, start_time, end_time = note
+            notes_list.append(miditoolkit.Note(velocity, pitch, start_time, end_time))
         return notes_list
 
     @staticmethod
     def build_controls(temp_controls):
         controls_list = []
         for control in temp_controls:
-            control, time, status = control
+            control, start_time, status = control
             if status:
-                # control-on
-                controls_list.append(miditoolkit.ControlChange(number=control, value=127, time=time))
+                controls_list.append(miditoolkit.ControlChange(number=control, value=127, time=start_time))
             else:
-                # control-off
-                controls_list.append(miditoolkit.ControlChange(number=control, value=0, time=time))
+                controls_list.append(miditoolkit.ControlChange(number=control, value=0, time=start_time))
         return controls_list
 
     def decode(self, integers, output_path):
