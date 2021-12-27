@@ -46,14 +46,12 @@ class Event(object):
 
     2. Optional:
     * note:
-        * `Note`
-        * `Program` (0~127)
+        * `Note` (0~127)
         * `Pitch` (0~127)
         * `Velocity` (0~127)
         * `Duration` (0~`split`*`bar_scale-1`)
     * drum:
-        * `Drum`
-        * `Program` (0~127)
+        * `Drum` (0~127)
         * `Pitch` (0~127)
         * `Velocity` (0~127)
         * `Duration` (0~`split`*`bar_scale-1`)
